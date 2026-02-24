@@ -1,17 +1,20 @@
 import cv2
 from pupil_apriltags import Detector
 from checkerboard_cli.config.ChessMapping import ChessMapping
-from PIL import Image, ImageDraw, ImageFont
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def getFrame(cap):
     if not cap.isOpened():
-        print("Error: Could not open camera.")
+        logger.error("Error: Could not open camera.")
         return None
     ret, frame = cap.read()
     cap.release()
     if not ret:
-        print("Error: Could not read frame from camera.")
+        logger.error("Error: Could not read frame from camera.")
         return None
     return frame
 
@@ -30,16 +33,16 @@ def getCapture(camera_index=0):
         return None
     tags = detectAprilTags(frame)
     if not tags:
-        print("No AprilTags detected.")
+        logger.warning("No AprilTags detected.")
     
     shortest_distance = float('inf')
 
     for tag in tags:
-        print(f"Detected tag ID: {tag.tag_id} at position: {tag.center}")
+        logger.debug(f"Detected tag ID: {tag.tag_id} at position: {tag.center}")
         # draw the tag on the frame
         corners = tag.corners.astype(int)
         symbol = ChessMapping.get(tag.tag_id, str(tag.tag_id))
-        print(f"Mapping tag ID {tag.tag_id} to symbol: {symbol}")
+        logger.debug(f"Mapping tag ID {tag.tag_id} to symbol: {symbol}")
 
         # if symbol is Upper case, draw and fill in White, else draw in Black
         fill_color = (255, 255, 255) if symbol.isupper() else (0, 0, 0)
@@ -60,6 +63,5 @@ def getCapture(camera_index=0):
 
 if __name__ == "__main__":
     # list cv2 video capture devices and detail
-    print("Available video capture devices:")
     frame = getCapture(1)
     cv2.imwrite("detected_tags.jpg", frame)
