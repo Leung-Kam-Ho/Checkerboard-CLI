@@ -65,3 +65,4 @@ if __name__ == "__main__":
     # list cv2 video capture devices and detail
     frame = getCapture(1)
     cv2.imwrite("detected_tags.jpg", frame)
+    logger.info("Saved detected tags image as detected_tags.jpg")
