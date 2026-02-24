@@ -1,6 +1,6 @@
 import cv2
 from pupil_apriltags import Detector
-from checkerboard_cli.config.ChessMapping import ChessMapping
+from checkerboard_cli.config.ChessMapping import ChessMapping, reversed_ChessMapping
 import logging
 import numpy as np
 

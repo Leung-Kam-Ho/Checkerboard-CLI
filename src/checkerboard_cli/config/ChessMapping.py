@@ -8,7 +8,7 @@ ChessMapping = {
     7 : "p",  # Black Pawn
     8 : "n",  # Black Knight
     9 : "b",  # Black Bishop
-    10 : "r", # Black Rook
-    11 : "q", # Black Queen
-    12 : "k", # Black King
+    10 : "r",  # Black Rook
+    11 : "q",  # Black Queen
+    12 : "k",  # Black King
 }
