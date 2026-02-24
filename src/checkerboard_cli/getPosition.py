@@ -1,6 +1,6 @@
 import cv2
 from pupil_apriltags import Detector
-from checkerboard_cli.config.ChessMapping import ChessMapping, reversed_ChessMapping
+from checkerboard_cli.config.ChessMapping import ChessMapping
 import logging
 import numpy as np
 
@@ -44,8 +44,6 @@ def getCapture(camera_index=0):
         corners = tag.corners.astype(int)
         symbol = ChessMapping.get(tag.tag_id, str(tag.tag_id))
         logger.debug(f"Mapping tag ID {tag.tag_id} to symbol: {symbol}")
-        
-        print(tag)
 
         # if symbol is Upper case, draw and fill in White, else draw in Black
         fill_color = (255, 255, 255) if symbol.isupper() else (0, 0, 0)

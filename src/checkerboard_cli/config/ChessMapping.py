@@ -1,14 +1,14 @@
 ChessMapping = {
-    1 : "P",  # White Pawn
-    2 : "N",  # White Knight
-    3 : "B",  # White Bishop
-    4 : "R",  # White Rook
-    5 : "Q",  # White Queen
-    6 : "K",  # White King
-    7 : "p",  # Black Pawn
-    8 : "n",  # Black Knight
-    9 : "b",  # Black Bishop
-    10 : "r",  # Black Rook
-    11 : "q",  # Black Queen
-    12 : "k",  # Black King
+    7 : "P",  # White Pawn
+    8 : "N",  # White Knight
+    9 : "B",  # White Bishop
+    10 : "R",  # White Rook
+    11 : "Q",  # White Queen
+    12 : "K",  # White King
+    1 : "p",  # Black Pawn
+    2 : "n",  # Black Knight
+    3 : "b",  # Black Bishop
+    4 : "r",  # Black Rook
+    5 : "q",  # Black Queen
+    6 : "k",  # Black King
 }
