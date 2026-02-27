@@ -48,7 +48,9 @@ def getCapture(camera_index=0):
         # if symbol is Upper case, draw and fill in White, else draw in Black
         fill_color = (255, 255, 255) if symbol.isupper() else (0, 0, 0)
         text_color = (0, 0, 0) if symbol.isupper() else (255, 255, 255)
-        shortest_distance = corners[1][0] - corners[0][0]
+        
+        # find two point distance or corners[1] and corners[0] to get the size of the tag
+        shortest_distance = min(np.linalg.norm(corners[1] - corners[0]), np.linalg.norm(corners[2] - corners[1]), np.linalg.norm(corners[3] - corners[2]), np.linalg.norm(corners[0] - corners[3]))
         # fill the tag with the color
         # cv2.fillPoly(frame, [corners], fill_color)
         # draw a circle that cover the polygon
@@ -56,7 +58,7 @@ def getCapture(camera_index=0):
         
         font_scale = shortest_distance / 50.0
         # draw the tag ID near the center
-        cv2.putText(frame, symbol, (int(tag.center[0] - 10 * font_scale), int(tag.center[1] + 10 * font_scale)), cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, 5)
+        cv2.putText(frame, symbol, (int(tag.center[0] - 10 * font_scale), int(tag.center[1] + 10 * font_scale)), cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, int(shortest_distance // 10))
 
     return frame
 
