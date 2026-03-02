@@ -30,3 +30,20 @@ SymbolMapping = {
     "k" : "♚",
     
 }
+
+NameMapping = {
+    "P" : "White Pawn",
+    "N" : "White Knight",
+    "B" : "White Bishop",
+    "R" : "White Rook",
+    "Q" : "White Queen",
+    "K" : "White King",
+    "p" : "Black Pawn",
+    "n" : "Black Knight",
+    "b" : "Black Bishop",
+    "r" : "Black Rook",
+    "q" : "Black Queen",
+    "k" : "Black King",
+    "TL" : "Top Left Corner",
+    "BR" : "Bottom Right Corner",
+}

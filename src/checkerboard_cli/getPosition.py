@@ -1,6 +1,6 @@
 import cv2
 from pupil_apriltags import Detector
-from checkerboard_cli.config.ChessMapping import ChessMapping, SymbolMapping
+from checkerboard_cli.config.ChessMapping import ChessMapping, SymbolMapping, NameMapping
 import logging
 import numpy as np
 import datetime
@@ -172,7 +172,8 @@ def getCapture(camera_index=0):
         # print("\n## Symbols\n")
         for symbol, unicode in SymbolMapping.items():
             # print(f"{symbol}: {unicode}")
-            std_output += f"{symbol}: {unicode}\n"
+            name = NameMapping.get(symbol, symbol)
+            std_output += f"{name}: {unicode}\n"
     
 
     return frame, std_output
