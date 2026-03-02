@@ -36,7 +36,7 @@ def detectAprilTags(frame):
     return tags
 
 
-def getChessboard(frame, boardCorners : dict):
+def getChessboard(frame, boardCorners : dict) -> None | tuple[np.ndarray, dict]:
     # use the top left and bottom right corner to get the rotation and draw the chessboard in a top down view
     
     # if the corners are not detected, return None
@@ -134,6 +134,12 @@ def getCapture(camera_index=0):
     piece_map = {}
     for peice in peicesTags:
         if peice.center is not None and position is not None:
+            
+            # if the peice is outside the chessboard, ignore it
+            if peice.center[0] < boardCorners["TL"].corners[0][0] or peice.center[0] > boardCorners["BR"].corners[2][0] or peice.center[1] < boardCorners["TL"].corners[0][1] or peice.center[1] > boardCorners["BR"].corners[2][1]:
+                logger.warning(f"Peice {peice.std_symol} at center {peice.center} is outside the chessboard, ignoring.")
+                continue
+            
             # draw a small circle at the center of the peice
             # cv2.circle(frame, (int(peice.center[0]), int(peice.center[1])), 5, (0, 255, 0), -1)
             # find
@@ -181,8 +187,9 @@ def getCapture(camera_index=0):
 
 if __name__ == "__main__":
     # list cv2 video capture devices and detail
-    frame, output= getCapture(1)
-    cv2.imwrite("detected_tags.jpg", frame)
-    logger.info("Saved detected tags image as detected_tags.jpg")
-    
-    print(output)
+    result = getCapture(1)
+    if result is not None:
+        frame, output = result
+        cv2.imwrite("detected_tags.jpg", frame)
+        logger.info("Saved detected tags image as detected_tags.jpg")
+        print(output)

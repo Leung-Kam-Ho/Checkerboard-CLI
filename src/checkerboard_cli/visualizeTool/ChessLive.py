@@ -15,7 +15,7 @@ if __name__ == "__main__":
             print(output)
         except Exception as e:
             print(f"Error capturing frame: {e}")
-            break
+            continue
         if frame is not None:
             # Put the current date and time on the frame, with white text and black background
             now = datetime.datetime.now()
