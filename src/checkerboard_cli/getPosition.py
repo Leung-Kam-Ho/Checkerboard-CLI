@@ -35,8 +35,6 @@ def getCapture(camera_index=0):
     tags = detectAprilTags(frame)
     if not tags:
         logger.warning("No AprilTags detected.")
-    
-    
 
     for tag in tags:
         logger.debug(f"Detected tag ID: {tag.tag_id} at position: {tag.center}")
