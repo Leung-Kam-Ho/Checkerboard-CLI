@@ -11,4 +11,22 @@ ChessMapping = {
     4 : "r",  # Black Rook
     5 : "q",  # Black Queen
     6 : "k",  # Black King
+    20 : "TL",  # Top Left Corner
+    21 : "BR",  # Bottom Right Corner
+}
+
+SymbolMapping = {
+    "P" : "♙",
+    "N" : "♘",
+    "B" : "♗",
+    "R" : "♖",
+    "Q" : "♕",
+    "K" : "♔",
+    "p" : "♟",
+    "n" : "♞",
+    "b" : "♝",
+    "r" : "♜",
+    "q" : "♛",
+    "k" : "♚",
+    
 }
