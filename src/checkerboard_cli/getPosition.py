@@ -22,17 +22,17 @@ def getFrame(cap):
         logger.error("Error: Could not open camera.")
         return None
     ret, frame = cap.read()
-    cap.release()
+    # cap.release()
     if not ret:
         logger.error("Error: Could not read frame from camera.")
         return None
     return frame
 
 
-def detectAprilTags(frame):
+def detectAprilTags(frame, detector: Detector):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    detector = Detector()
     tags = detector.detect(gray)
+    del detector  # Explicitly delete the detector to free resources
     return tags
 
 
@@ -42,21 +42,28 @@ def getChessboard(frame, boardCorners : dict) -> None | tuple[np.ndarray, dict]:
     # if the corners are not detected, return None
     if boardCorners["TL"] is None or boardCorners["BR"] is None:
         logger.warning("Cannot get chessboard: Missing corners. TL: {}, BR: {}".format(boardCorners["TL"], boardCorners["BR"]))
-        return None
+        return frame, None
     
     # draw the chessboard in a top down view
     tl = boardCorners["TL"].center
     br = boardCorners["BR"].center
+    
+    cv2.rectangle(frame, (int(tl[0]), int(tl[1])), (int(br[0]), int(br[1])), (0, 255, 0), 2)
+    
+    offset = min(np.linalg.norm(boardCorners["TL"].corners[1] - boardCorners["TL"].corners[0]), np.linalg.norm(boardCorners["TL"].corners[2] - boardCorners["TL"].corners[1]), np.linalg.norm(boardCorners["TL"].corners[3] - boardCorners["TL"].corners[2]), np.linalg.norm(boardCorners["TL"].corners[0] - boardCorners["TL"].corners[3]))
+    
+    offset = offset / 2.0  # reduce the offset to avoid cutting off the corners of the chessboard
+    tl[0] += offset * 5
+    br[0] -= offset * 5
+    # tl[1] -= offset 
+    # br[1] += offset 
+    chessboard = frame.copy()
+    
     width = int(br[0] - tl[0])
     height = int(br[1] - tl[1])
     if width <= 0 or height <= 0:
         logger.warning("Invalid chessboard corners: TL: {}, BR: {}".format(tl, br))
         return None
-    
-    offset = min(np.linalg.norm(boardCorners["TL"].corners[1] - boardCorners["TL"].corners[0]), np.linalg.norm(boardCorners["TL"].corners[2] - boardCorners["TL"].corners[1]), np.linalg.norm(boardCorners["TL"].corners[3] - boardCorners["TL"].corners[2]), np.linalg.norm(boardCorners["TL"].corners[0] - boardCorners["TL"].corners[3]))
-    
-    offset = offset / 2.0  # reduce the offset to avoid cutting off the corners of the chessboard
-    chessboard = frame.copy()
     # chessboard = frame[int(tl[1] + offset):int(br[1] - offset), int(tl[0] + offset):int(br[0] - offset)]
     # chessboard = cv2.resize(chessboard, (400, 400))
     
@@ -67,13 +74,15 @@ def getChessboard(frame, boardCorners : dict) -> None | tuple[np.ndarray, dict]:
     # draw the chessboard grid and get the position of each square
     for i in range(8):
         for j in range(8):
-            x1 = int(tl[0] + j * width / 8 + offset)
-            y1 = int(tl[1] + i * height / 8 + offset)
-            x2 = int(tl[0] + (j + 1) * width / 8 - offset)
-            y2 = int(tl[1] + (i + 1) * height / 8 - offset)
+            x1 = int(tl[0] + j * width / 8)
+            y1 = int(tl[1] + i * height / 8)
+            x2 = int(tl[0] + (j + 1) * width / 8)
+            y2 = int(tl[1] + (i + 1) * height / 8)
             
             square_name = files[j] + ranks[7 - i]
             position[square_name] = ((x1 + x2) // 2, (y1 + y2) // 2)
+            # draw the grid
+            cv2.rectangle(chessboard, (x1, y1), (x2, y2), (255, 0, 0), 1)
     
     
         
@@ -84,12 +93,19 @@ def getChessboard(frame, boardCorners : dict) -> None | tuple[np.ndarray, dict]:
     
 
 
-def getCapture(camera_index=0):
-    cap = cv2.VideoCapture(camera_index)
+def getCapture(cap : cv2.VideoCapture | None, detector: Detector | None, camera_index=0):
+    if cap is None:
+        print(f"Camera index {camera_index} is not valid. Attempting to initialize video capture.")
+        print(f"Initialized video capture with camera index {camera_index}")
+        cap = cv2.VideoCapture(camera_index)
+    if detector is None:
+        print("AprilTag detector is not initialized. Attempting to initialize.")
+        detector = Detector(families="tag36h11")
+        print("AprilTag detector initialized successfully.")
     frame = getFrame(cap)
     if frame is None:
         return None
-    tags = detectAprilTags(frame)
+    tags = detectAprilTags(frame, detector)
     if not tags:
         logger.warning("No AprilTags detected.")
     
@@ -130,6 +146,9 @@ def getCapture(camera_index=0):
 
     frame, position = getChessboard(frame, boardCorners)
     
+    if position is None:
+        logger.warning("Chessboard position could not be determined. Skipping piece mapping.")
+        return frame, None
     # find the peices position on the chessboard
     piece_map = {}
     for peice in peicesTags:
@@ -186,8 +205,12 @@ def getCapture(camera_index=0):
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Detect chessboard and pieces using AprilTags.")
+    parser.add_argument("camera_index", type=int, default=0, help="Index of the camera to use.")
+    args = parser.parse_args()
     # list cv2 video capture devices and detail
-    result = getCapture(2)
+    result = getCapture(args.camera_index)
     if result is not None:
         frame, output = result
         cv2.imwrite("detected_tags.jpg", frame)

@@ -1,4 +1,5 @@
 from checkerboard_cli.getPosition import getCapture
+from pupil_apriltags import Detector
 import datetime
 import time
 import cv2
@@ -8,10 +9,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-if __name__ == "__main__":
+def live(camera_index=2):
+    cap = cv2.VideoCapture(camera_index)
+    detector = Detector(families="tag36h11")
     while True:
         try:
-            frame, output = getCapture(1)
+            frame, output = getCapture(cap, detector, camera_index)
             print(output)
         except Exception as e:
             print(f"Error capturing frame: {e}")
@@ -35,5 +38,9 @@ if __name__ == "__main__":
                 break
         else:
             print("Failed to capture frame.")
-        time.sleep(1)  # Add a small delay to reduce CPU usage
+        # time.sleep(1/10)  # Add a small delay to reduce CPU usage
     cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    live(2)
