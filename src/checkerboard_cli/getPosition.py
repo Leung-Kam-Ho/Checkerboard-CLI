@@ -187,7 +187,7 @@ def getCapture(camera_index=0):
 
 if __name__ == "__main__":
     # list cv2 video capture devices and detail
-    result = getCapture(1)
+    result = getCapture(2)
     if result is not None:
         frame, output = result
         cv2.imwrite("detected_tags.jpg", frame)

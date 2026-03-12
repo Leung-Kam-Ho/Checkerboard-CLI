@@ -21,4 +21,4 @@ include = ["src/*"]
 packages = ["src/checkerboard_cli"]
 
 [project.scripts]
-rac = "checkerboard_cli:main"
+cbc = "checkerboard_cli:main"
